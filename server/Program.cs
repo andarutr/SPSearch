@@ -17,10 +17,16 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.MapControllers();
 
-app.MapFallbackToFile("index.html", new StaticFileOptions
+var sfOpts = new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
         Path.GetFullPath(clientPath))
-});
+};
+
+app.MapFallbackToFile("home", "sign.html", sfOpts);
+app.MapFallbackToFile("search", "search.html", sfOpts);
+app.MapFallbackToFile("result", "result.html", sfOpts);
+
+app.MapFallbackToFile("sign.html", sfOpts);
 
 app.Run();
