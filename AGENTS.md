@@ -50,6 +50,8 @@ SQL Server schema search tool. Find which tables have the columns you need witho
 | 2026-06-21 | Step indicator → Bootstrap badges with 10px radius | Replaced custom circles with Bootstrap `.badge bg-primary/success/secondary` |
 | 2026-06-21 | Scrollable results table with sticky header | `.table-wrapper` max-height + sticky thead keeps header visible while rows scroll |
 | 2026-06-21 | 209 SELECT-only SPs in sql/SP/ | One per table, naming `SP_{Database}_Get{Table}`, generated from TABLE scripts |
+| 2026-06-21 | Row click → schema modal on result page | Click a result row to view full column list + TOP 3 sample records in a Bootstrap modal |
+| 2026-06-21 | Tables to Find fuzzy card | Dynamic text inputs for table name patterns (LIKE %), OR between patterns, AND with column filter and multi-select |
 
 ## API Endpoints
 
@@ -58,7 +60,8 @@ SQL Server schema search tool. Find which tables have the columns you need witho
 | POST | /api/search/connect | Validate SQL connection |
 | POST | /api/search/databases | List databases |
 | POST | /api/search/tables | List tables per database |
-| POST | /api/search/execute | Search columns (LIKE OR) |
+| POST | /api/search/execute | Search columns + table name patterns (LIKE OR) |
+| POST | /api/search/schema | Get table schema + sample records |
 | GET | /api/search/log/{filename} | Download log file |
 
 ## Security Rules
@@ -71,5 +74,5 @@ SQL Server schema search tool. Find which tables have the columns you need witho
 ## Pages
 
 1. **sign.html** (`/home`) — Server credentials form → SIGN
-2. **search.html** (`/search`) — Database/table select (Select2 multi-select) + dynamic column inputs → SEARCH
-3. **result.html** (`/result`) — Results table (scrollable, sticky header) + log download + back to search (state preserved)
+2. **search.html** (`/search`) — Database/table select (Select2 multi-select) + dynamic table name inputs + dynamic column inputs → SEARCH
+3. **result.html** (`/result`) — Results table (scrollable, sticky header, click row for schema modal) + log download + back to search (state preserved)

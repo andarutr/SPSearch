@@ -220,6 +220,23 @@ var SPSearch = (function () {
             selectAllLink.text(allSelected ? 'Deselect All' : 'Select All');
         });
 
+        // Add table
+        $('#btnAddTable').on('click', function () {
+            var container = $('#tablesContainer');
+            var count = container.children().length;
+            var row = $('<div class="column-row" data-index="' + count + '">' +
+                '<input type="text" class="table-input" placeholder="e.g. Patient, Order, Invoice">' +
+                '<button class="btn btn-danger btn-delete-table">&times;</button>' +
+                '</div>');
+            container.append(row);
+            row.find('.table-input').focus();
+        });
+
+        // Delete table (delegated)
+        $('#tablesContainer').on('click', '.btn-delete-table', function () {
+            $(this).closest('.column-row').remove();
+        });
+
         // Add column
         $('#btnAddColumn').on('click', function () {
             var container = $('#columnsContainer');
@@ -253,6 +270,20 @@ var SPSearch = (function () {
             window.location.href = '/home';
         });
 
+        // Restore table inputs
+        if (savedParams && savedParams.tableNames) {
+            $('#tablesContainer').empty();
+            savedParams.tableNames.forEach(function (name) {
+                var container = $('#tablesContainer');
+                var count = container.children().length;
+                var row = $('<div class="column-row" data-index="' + count + '">' +
+                    '<input type="text" class="table-input" placeholder="e.g. Patient, Order, Invoice" value="' + $('<span>').text(name).html() + '">' +
+                    '<button class="btn btn-danger btn-delete-table">&times;</button>' +
+                    '</div>');
+                container.append(row);
+            });
+        }
+
         // Restore column inputs
         if (savedParams && savedParams.columns) {
             // Remove default empty row
@@ -277,6 +308,12 @@ var SPSearch = (function () {
                 return;
             }
 
+            var tableNames = [];
+            $('.table-input').each(function () {
+                var val = $(this).val().trim();
+                if (val) tableNames.push(val);
+            });
+
             var columns = [];
             $('.col-input').each(function () {
                 var val = $(this).val().trim();
@@ -293,6 +330,7 @@ var SPSearch = (function () {
             setSearchParams({
                 database: db,
                 tables: tables,
+                tableNames: tableNames,
                 columns: columns
             });
 
@@ -353,6 +391,84 @@ var SPSearch = (function () {
                 window.location.href = apiBase + '/log/' + encodeURIComponent(filename);
             }
         });
+
+        // Row click — show schema modal
+        $('#resultsBody').on('click', '.result-row', function () {
+            try {
+                var schema = $(this).data('schema');
+                var table = $(this).data('table');
+
+                $('#schemaModalLabel').text('Schema: ' + schema + '.' + table);
+                $('#schemaLoading').removeClass('hidden');
+                $('#schemaContent').addClass('hidden');
+                $('#schemaError').addClass('hidden');
+
+                var schemaReq = $.extend({}, creds, {
+                    database: params.database,
+                    tableSchema: schema,
+                    tableName: table
+                });
+
+                $.ajax({
+                    url: apiBase + '/schema',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(schemaReq),
+                    success: function (resp) {
+                        $('#schemaLoading').addClass('hidden');
+
+                        var colTbody = $('#schemaColumnsTable tbody');
+                        colTbody.empty();
+                        resp.columns.forEach(function (col) {
+                            colTbody.append('<tr>' +
+                                '<td><strong>' + $('<span>').text(col.columnName).html() + '</strong></td>' +
+                                '<td>' + $('<span>').text(col.dataType).html() + '</td>' +
+                                '<td>' + $('<span>').text(col.isNullable).html() + '</td>' +
+                                '<td>' + (col.maxLength != null ? col.maxLength : '&mdash;') + '</td>' +
+                                '</tr>');
+                        });
+
+                        var recThead = $('#schemaRecordsTable thead tr');
+                        var recTbody = $('#schemaRecordsTable tbody');
+                        recThead.empty();
+                        recTbody.empty();
+
+                        if (resp.sampleRecords && resp.sampleRecords.length > 0) {
+                            var headers = Object.keys(resp.sampleRecords[0]);
+                            headers.forEach(function (h) {
+                                recThead.append('<th>' + $('<span>').text(h).html() + '</th>');
+                            });
+                            resp.sampleRecords.forEach(function (rec) {
+                                var cells = '';
+                                headers.forEach(function (h) {
+                                    var val = rec[h];
+                                    cells += '<td>' + (val != null ? $('<span>').text(String(val)).html() : '<em>null</em>') + '</td>';
+                                });
+                                recTbody.append('<tr>' + cells + '</tr>');
+                            });
+                        } else {
+                            recTbody.append('<tr><td class="text-muted">No sample records found.</td></tr>');
+                        }
+
+                        $('#schemaContent').removeClass('hidden');
+                    },
+                    error: function (xhr) {
+                        $('#schemaLoading').addClass('hidden');
+                        var msg = 'Failed to load schema.';
+                        try { var r = xhr.responseJSON; if (r && r.message) msg = r.message; } catch {}
+                        $('#schemaError').text(msg).removeClass('hidden');
+                    }
+                });
+
+                var modalEl = document.getElementById('schemaModal');
+                if (modalEl) {
+                    var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.show();
+                }
+            } catch (e) {
+                console.error('Schema modal error:', e);
+            }
+        });
     }
 
     function renderResults(resp) {
@@ -378,7 +494,7 @@ var SPSearch = (function () {
             $('#resultsTableContainer table').removeClass('hidden');
 
             results.forEach(function (r) {
-                var row = $('<tr>' +
+                var row = $('<tr class="result-row" data-schema="' + $('<span>').text(r.tableSchema).html() + '" data-table="' + $('<span>').text(r.tableName).html() + '">' +
                     '<td>' + $('<span>').text(r.tableSchema).html() + '</td>' +
                     '<td><strong>' + $('<span>').text(r.tableName).html() + '</strong></td>' +
                     '<td><span class="badge badge-table">' + $('<span>').text(r.columnName).html() + '</span></td>' +

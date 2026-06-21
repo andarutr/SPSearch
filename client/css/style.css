@@ -263,6 +263,34 @@ tbody tr:hover {
     background: #eff6ff;
 }
 
+tbody .result-row {
+    cursor: pointer;
+}
+
+/* SCHEMA MODAL TABLE */
+.schema-table {
+    font-size: 0.85rem;
+}
+
+.schema-table thead th {
+    background: #f9fafb;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 0.5rem 0.65rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.schema-table tbody td {
+    padding: 0.4rem 0.65rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.schema-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
 /* STATUS / LOADING */
 .loading-overlay {
     text-align: center;
