@@ -421,6 +421,40 @@ var SPSearch = (function () {
             $(this).closest('.column-row').remove();
         });
 
+        // Add SP Name
+        $('#btnAddSpName').on('click', function () {
+            var container = $('#spNamesContainer');
+            var count = container.children().length;
+            var row = $('<div class="column-row" data-index="' + count + '">' +
+                '<input type="text" class="sp-name-input" placeholder="e.g. GetPatient, sp_help">' +
+                '<button class="btn btn-danger btn-delete-sp-name">&times;</button>' +
+                '</div>');
+            container.append(row);
+            row.find('.sp-name-input').focus();
+        });
+
+        // Delete SP Name (delegated)
+        $('#spNamesContainer').on('click', '.btn-delete-sp-name', function () {
+            $(this).closest('.column-row').remove();
+        });
+
+        // Add SP Param
+        $('#btnAddSpParam').on('click', function () {
+            var container = $('#spParamsContainer');
+            var count = container.children().length;
+            var row = $('<div class="column-row" data-index="' + count + '">' +
+                '<input type="text" class="sp-param-input" placeholder="e.g. @PatientId, @Name">' +
+                '<button class="btn btn-danger btn-delete-sp-param">&times;</button>' +
+                '</div>');
+            container.append(row);
+            row.find('.sp-param-input').focus();
+        });
+
+        // Delete SP Param (delegated)
+        $('#spParamsContainer').on('click', '.btn-delete-sp-param', function () {
+            $(this).closest('.column-row').remove();
+        });
+
         // Back button
         $('#btnBack').on('click', function () {
             window.location.href = '/home';
@@ -461,6 +495,34 @@ var SPSearch = (function () {
             });
         }
 
+        // Restore SP name inputs
+        if (savedParams && savedParams.spNames) {
+            $('#spNamesContainer').empty();
+            savedParams.spNames.forEach(function (name) {
+                var container = $('#spNamesContainer');
+                var count = container.children().length;
+                var row = $('<div class="column-row" data-index="' + count + '">' +
+                    '<input type="text" class="sp-name-input" placeholder="e.g. GetPatient, sp_help" value="' + $('<span>').text(name).html() + '">' +
+                    '<button class="btn btn-danger btn-delete-sp-name">&times;</button>' +
+                    '</div>');
+                container.append(row);
+            });
+        }
+
+        // Restore SP param inputs
+        if (savedParams && savedParams.spParams) {
+            $('#spParamsContainer').empty();
+            savedParams.spParams.forEach(function (param) {
+                var container = $('#spParamsContainer');
+                var count = container.children().length;
+                var row = $('<div class="column-row" data-index="' + count + '">' +
+                    '<input type="text" class="sp-param-input" placeholder="e.g. @PatientId, @Name" value="' + $('<span>').text(param).html() + '">' +
+                    '<button class="btn btn-danger btn-delete-sp-param">&times;</button>' +
+                    '</div>');
+                container.append(row);
+            });
+        }
+
         // Search button
         $('#btnSearch').on('click', function () {
             hideError();
@@ -487,6 +549,18 @@ var SPSearch = (function () {
                 return;
             }
 
+            var spNames = [];
+            $('.sp-name-input').each(function () {
+                var val = $(this).val().trim();
+                if (val) spNames.push(val);
+            });
+
+            var spParams = [];
+            $('.sp-param-input').each(function () {
+                var val = $(this).val().trim();
+                if (val) spParams.push(val);
+            });
+
             var tables = tableSelect.val() || null;
             var procedures = procedureSelect.val() || null;
 
@@ -495,7 +569,9 @@ var SPSearch = (function () {
                 tables: tables,
                 tableNames: tableNames,
                 procedures: procedures,
-                columns: columns
+                columns: columns,
+                spNames: spNames,
+                spParams: spParams
             });
 
             window.location.href = '/result';

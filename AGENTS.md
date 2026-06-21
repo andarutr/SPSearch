@@ -54,6 +54,7 @@ SQL Server schema search tool. Find which tables have the columns you need witho
 | 2026-06-21 | Tables to Find fuzzy card | Dynamic text inputs for table name patterns (LIKE %), OR between patterns, AND with column filter and multi-select |
 | 2026-06-21 | Stored Procedure multi-select dropdown | Select2 multi-select listing all SPs per database, independent search alongside tables, shows SP name + truncated definition (200 chars) |
 | 2026-06-21 | Account suggestion dropdown on sign page | Saved accounts in localStorage, dedup by server+username, click to auto-fill all fields |
+| 2026-06-22 | Namefile SP + Parameter SP fuzzy cards | Two new cards below Columns to Find — search SPs by name pattern (LIKE %) and parameter name pattern (LIKE %), same dynamic-input UX as Columns to Find, AND logic with procedure dropdown |
 
 ## API Endpoints
 
@@ -88,5 +89,5 @@ SQL Server schema search tool. Find which tables have the columns you need witho
 ## Pages
 
 1. **sign.html** (`/home`) — Server credentials form → SIGN
-2. **search.html** (`/search`) — Database/table select (Select2 multi-select) + dynamic table name inputs + dynamic column inputs + stored procedure Select2 multi-select → SEARCH
+2. **search.html** (`/search`) — Database/table select (Select2 multi-select) + dynamic table name inputs + dynamic column inputs + dynamic SP name inputs + dynamic SP param inputs + stored procedure Select2 multi-select → SEARCH
 3. **result.html** (`/result`) — Results table + stored procedure results table (scrollable, sticky header, click row for schema modal) + log download + back to search (state preserved)

@@ -144,7 +144,7 @@ public class SchemaSearchService
         // Procedure search
         var procedureResults = new List<ProcedureSearchResult>();
         var procParams = new List<SqlParameter>();
-        var procWhere = "";
+        var procConditions = new List<string>();
 
         if (req.Procedures is { Count: > 0 })
         {
@@ -155,10 +155,36 @@ public class SchemaSearchService
                 inClauses.Add(paramName);
                 procParams.Add(new SqlParameter(paramName, req.Procedures[i]));
             }
-            procWhere = $"WHERE s.name + '.' + p.name IN ({string.Join(", ", inClauses)})";
+            procConditions.Add($"s.name + '.' + p.name IN ({string.Join(", ", inClauses)})");
         }
 
-        var procSql = $"SELECT s.name, p.name, m.definition " +
+        if (req.SpNames is { Count: > 0 })
+        {
+            var nameClauses = new List<string>();
+            for (int i = 0; i < req.SpNames.Count; i++)
+            {
+                var paramName = $"@spn{i}";
+                nameClauses.Add($"p.name LIKE {paramName}");
+                procParams.Add(new SqlParameter(paramName, $"%{req.SpNames[i]}%"));
+            }
+            procConditions.Add($"({string.Join(" OR ", nameClauses)})");
+        }
+
+        if (req.SpParams is { Count: > 0 })
+        {
+            var paramClauses = new List<string>();
+            for (int i = 0; i < req.SpParams.Count; i++)
+            {
+                var paramName = $"@spp{i}";
+                paramClauses.Add($"par.name LIKE {paramName}");
+                procParams.Add(new SqlParameter(paramName, $"%{req.SpParams[i]}%"));
+            }
+            procConditions.Add($"EXISTS (SELECT 1 FROM sys.parameters par WHERE par.object_id = p.object_id AND ({string.Join(" OR ", paramClauses)}))");
+        }
+
+        var procWhere = procConditions.Count > 0 ? "WHERE " + string.Join(" AND ", procConditions) : "";
+
+        var procSql = $"SELECT DISTINCT s.name, p.name, m.definition " +
                       $"FROM sys.procedures p " +
                       $"JOIN sys.schemas s ON p.schema_id = s.schema_id " +
                       $"JOIN sys.sql_modules m ON p.object_id = m.object_id " +
@@ -290,6 +316,8 @@ public class SchemaSearchService
             $"Table Filter: {req.Table ?? "(all tables)"}",
             $"Table Names Filter: {(req.TableNames is { Count: > 0 } ? string.Join(", ", req.TableNames) : "(none)")}",
             $"Procedure Filter: {(req.Procedures is { Count: > 0 } ? string.Join(", ", req.Procedures) : "(all procedures)")}",
+            $"SP Names Filter: {(req.SpNames is { Count: > 0 } ? string.Join(", ", req.SpNames) : "(none)")}",
+            $"SP Params Filter: {(req.SpParams is { Count: > 0 } ? string.Join(", ", req.SpParams) : "(none)")}",
             $"Columns Searched: {string.Join(", ", req.Columns)}",
             "========================================",
             "",

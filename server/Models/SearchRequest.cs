@@ -12,6 +12,8 @@ public class SearchRequest
     public string? Table { get; set; }
     public List<string>? TableNames { get; set; }
     public List<string>? Procedures { get; set; }
+    public List<string>? SpNames { get; set; }
+    public List<string>? SpParams { get; set; }
     public string? TableSchema { get; set; }
     public string? TableName { get; set; }
     public List<string> Columns { get; set; } = [];
