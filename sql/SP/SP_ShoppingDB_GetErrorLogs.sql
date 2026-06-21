@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetErrorLogs
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetErrorLogs
     @RowId INT = NULL
 AS
 BEGIN

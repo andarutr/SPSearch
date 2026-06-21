@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetPayments
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetPayments
     @RowId INT = NULL
 AS
 BEGIN

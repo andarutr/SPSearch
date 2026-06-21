@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetCountries
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetCountries
     @RowId INT = NULL
 AS
 BEGIN

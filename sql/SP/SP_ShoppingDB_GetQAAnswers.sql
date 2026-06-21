@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetQAAnswers
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetQAAnswers
     @RowId INT = NULL
 AS
 BEGIN

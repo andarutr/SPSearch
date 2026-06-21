@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetLabNormalRanges
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetLabNormalRanges
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetFollowUps
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetFollowUps
     @RowId INT = NULL
 AS
 BEGIN

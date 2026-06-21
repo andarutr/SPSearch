@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetStaffCertifications
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetStaffCertifications
     @RowId INT = NULL
 AS
 BEGIN

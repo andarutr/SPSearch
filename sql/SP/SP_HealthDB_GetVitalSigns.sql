@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetVitalSigns
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetVitalSigns
     @RowId INT = NULL
 AS
 BEGIN

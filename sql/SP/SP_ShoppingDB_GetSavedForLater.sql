@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetSavedForLater
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetSavedForLater
     @RowId INT = NULL
 AS
 BEGIN

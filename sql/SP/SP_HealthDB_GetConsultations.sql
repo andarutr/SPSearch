@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetConsultations
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetConsultations
     @RowId INT = NULL
 AS
 BEGIN

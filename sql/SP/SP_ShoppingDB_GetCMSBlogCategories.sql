@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetCMSBlogCategories
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetCMSBlogCategories
     @RowId INT = NULL
 AS
 BEGIN

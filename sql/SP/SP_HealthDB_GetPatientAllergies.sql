@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetPatientAllergies
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetPatientAllergies
     @RowId INT = NULL
 AS
 BEGIN

@@ -71,6 +71,20 @@ public class SearchController : ControllerBase
         }
     }
 
+    [HttpPost("procedures")]
+    public async Task<IActionResult> GetProcedures([FromBody] SearchRequest req)
+    {
+        try
+        {
+            var procedures = await _service.GetProceduresAsync(req);
+            return Ok(procedures);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     [HttpPost("schema")]
     public async Task<IActionResult> GetSchema([FromBody] SearchRequest req)
     {

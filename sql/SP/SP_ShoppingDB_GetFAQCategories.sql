@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetFAQCategories
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetFAQCategories
     @RowId INT = NULL
 AS
 BEGIN

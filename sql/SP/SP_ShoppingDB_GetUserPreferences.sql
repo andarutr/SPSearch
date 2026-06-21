@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetUserPreferences
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetUserPreferences
     @RowId INT = NULL
 AS
 BEGIN

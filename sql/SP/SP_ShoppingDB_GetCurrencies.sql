@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetCurrencies
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetCurrencies
     @RowId INT = NULL
 AS
 BEGIN

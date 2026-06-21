@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetCampaigns
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetCampaigns
     @RowId INT = NULL
 AS
 BEGIN

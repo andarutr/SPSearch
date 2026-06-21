@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetLoyaltyPoints
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetLoyaltyPoints
     @RowId INT = NULL
 AS
 BEGIN

@@ -11,13 +11,25 @@
         <link rel="stylesheet" href="css/style.css" />
     </head>
     <body>
-        <div class="container">
-            <div class="step-indicator">
-                <span class="badge step bg-success">SIGN</span>
-                <span class="badge step bg-primary">SEARCH</span>
-                <span class="badge step bg-secondary">RESULT</span>
+        <nav class="navbar navbar-expand navbar-dark bg-primary shadow-sm mb-4">
+            <div class="container">
+                <img src="images/logo.png" width="100" />
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge rounded-pill px-3 py-2 bg-success"
+                        >SIGN</span
+                    >
+                    <span
+                        class="badge rounded-pill px-3 py-2 bg-light text-dark fw-semibold"
+                        >SEARCH</span
+                    >
+                    <span class="badge rounded-pill px-3 py-2 bg-secondary"
+                        >RESULT</span
+                    >
+                </div>
             </div>
+        </nav>
 
+        <div class="container">
             <h1 class="page-title">SQL Schema Search</h1>
 
             <div class="card">
@@ -28,7 +40,7 @@
 
                 <div id="errorBox" class="alert alert-error hidden"></div>
 
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label for="server">Server</label>
                     <input
                         type="text"
@@ -36,6 +48,7 @@
                         placeholder="e.g. localhost or SQLSRV01"
                         autocomplete="off"
                     />
+                    <div id="suggestionBox" class="suggestion-box hidden"></div>
                 </div>
 
                 <div class="form-group">

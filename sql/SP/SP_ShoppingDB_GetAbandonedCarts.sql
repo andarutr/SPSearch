@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetAbandonedCarts
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetAbandonedCarts
     @RowId INT = NULL
 AS
 BEGIN

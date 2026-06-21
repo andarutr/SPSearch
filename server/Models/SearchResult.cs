@@ -12,7 +12,16 @@ public class SearchResponse
 {
     public List<SearchResultRow> Results { get; set; } = [];
     public int TotalTables { get; set; }
+    public List<ProcedureSearchResult> ProcedureResults { get; set; } = [];
+    public int TotalProcedures { get; set; }
     public string LogFile { get; set; } = string.Empty;
+}
+
+public class ProcedureSearchResult
+{
+    public string ProcedureSchema { get; set; } = string.Empty;
+    public string ProcedureName { get; set; } = string.Empty;
+    public string Definition { get; set; } = string.Empty;
 }
 
 public class ColumnInfo

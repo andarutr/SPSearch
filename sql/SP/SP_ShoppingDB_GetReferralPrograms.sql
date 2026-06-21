@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetReferralPrograms
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetReferralPrograms
     @RowId INT = NULL
 AS
 BEGIN

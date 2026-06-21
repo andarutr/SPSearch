@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetWaitingList
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetWaitingList
     @RowId INT = NULL
 AS
 BEGIN

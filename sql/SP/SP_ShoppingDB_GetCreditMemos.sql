@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetCreditMemos
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetCreditMemos
     @RowId INT = NULL
 AS
 BEGIN

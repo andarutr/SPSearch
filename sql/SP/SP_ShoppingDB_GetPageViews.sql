@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetPageViews
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetPageViews
     @RowId INT = NULL
 AS
 BEGIN

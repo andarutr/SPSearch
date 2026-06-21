@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetSupportTicketPriorities
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetSupportTicketPriorities
     @RowId INT = NULL
 AS
 BEGIN

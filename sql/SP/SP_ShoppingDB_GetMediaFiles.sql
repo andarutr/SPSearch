@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetMediaFiles
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetMediaFiles
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetShiftTypes
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetShiftTypes
     @RowId INT = NULL
 AS
 BEGIN

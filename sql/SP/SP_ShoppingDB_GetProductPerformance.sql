@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetProductPerformance
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetProductPerformance
     @RowId INT = NULL
 AS
 BEGIN

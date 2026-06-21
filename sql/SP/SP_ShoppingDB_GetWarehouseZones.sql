@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetWarehouseZones
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetWarehouseZones
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetOrderNotes
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetOrderNotes
     @RowId INT = NULL
 AS
 BEGIN

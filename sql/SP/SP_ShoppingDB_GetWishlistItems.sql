@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetWishlistItems
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetWishlistItems
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetSearchQueries
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetSearchQueries
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetUserSessionAnalytics
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetUserSessionAnalytics
     @RowId INT = NULL
 AS
 BEGIN

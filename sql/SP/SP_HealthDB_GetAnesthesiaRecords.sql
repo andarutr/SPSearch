@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetAnesthesiaRecords
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetAnesthesiaRecords
     @RowId INT = NULL
 AS
 BEGIN

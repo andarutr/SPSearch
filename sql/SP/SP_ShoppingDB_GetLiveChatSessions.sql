@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetLiveChatSessions
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetLiveChatSessions
     @RowId INT = NULL
 AS
 BEGIN

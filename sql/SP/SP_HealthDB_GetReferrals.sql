@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetReferrals
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetReferrals
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetOrderItems
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetOrderItems
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetBillingItemCategories
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetBillingItemCategories
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetGiftCards
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetGiftCards
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetOrderStatusHistory
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetOrderStatusHistory
     @RowId INT = NULL
 AS
 BEGIN

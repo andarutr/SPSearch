@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetStaffRoles
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetStaffRoles
     @RowId INT = NULL
 AS
 BEGIN

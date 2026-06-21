@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetDispensations
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetDispensations
     @RowId INT = NULL
 AS
 BEGIN

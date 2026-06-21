@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetRoomTypes
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetRoomTypes
     @RowId INT = NULL
 AS
 BEGIN

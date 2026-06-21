@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetProductTagsMap
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetProductTagsMap
     @RowId INT = NULL
 AS
 BEGIN

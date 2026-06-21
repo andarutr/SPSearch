@@ -118,34 +118,99 @@ public class SchemaSearchService
                   $"WHERE {string.Join(" AND ", andClauses)}{tableFilter} " +
                   $"ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION";
 
-        using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddRange([.. parameters]);
-
-        using var reader = await cmd.ExecuteReaderAsync();
-
         var tableSet = new HashSet<string>();
 
-        while (await reader.ReadAsync())
+        using (var cmd = new SqlCommand(sql, conn))
         {
-            var row = new SearchResultRow
+            cmd.Parameters.AddRange([.. parameters]);
+
+            using (var reader = await cmd.ExecuteReaderAsync())
             {
-                TableSchema = reader.GetString(0),
-                TableName = reader.GetString(1),
-                ColumnName = reader.GetString(2),
-                DataType = reader.GetString(3)
-            };
-            results.Add(row);
-            tableSet.Add($"{row.TableSchema}.{row.TableName}");
+                while (await reader.ReadAsync())
+                {
+                    var row = new SearchResultRow
+                    {
+                        TableSchema = reader.GetString(0),
+                        TableName = reader.GetString(1),
+                        ColumnName = reader.GetString(2),
+                        DataType = reader.GetString(3)
+                    };
+                    results.Add(row);
+                    tableSet.Add($"{row.TableSchema}.{row.TableName}");
+                }
+            }
         }
 
-        var logFile = await WriteLogAsync(req, results);
+        // Procedure search
+        var procedureResults = new List<ProcedureSearchResult>();
+        var procParams = new List<SqlParameter>();
+        var procWhere = "";
+
+        if (req.Procedures is { Count: > 0 })
+        {
+            var inClauses = new List<string>();
+            for (int i = 0; i < req.Procedures.Count; i++)
+            {
+                var paramName = $"@proc{i}";
+                inClauses.Add(paramName);
+                procParams.Add(new SqlParameter(paramName, req.Procedures[i]));
+            }
+            procWhere = $"WHERE s.name + '.' + p.name IN ({string.Join(", ", inClauses)})";
+        }
+
+        var procSql = $"SELECT s.name, p.name, m.definition " +
+                      $"FROM sys.procedures p " +
+                      $"JOIN sys.schemas s ON p.schema_id = s.schema_id " +
+                      $"JOIN sys.sql_modules m ON p.object_id = m.object_id " +
+                      $"{procWhere} " +
+                      $"ORDER BY s.name, p.name";
+
+        using (var procCmd = new SqlCommand(procSql, conn))
+        {
+            if (procParams.Count > 0)
+                procCmd.Parameters.AddRange([.. procParams]);
+
+            using var procReader = await procCmd.ExecuteReaderAsync();
+            while (await procReader.ReadAsync())
+            {
+                procedureResults.Add(new ProcedureSearchResult
+                {
+                    ProcedureSchema = procReader.GetString(0),
+                    ProcedureName = procReader.GetString(1),
+                    Definition = procReader.IsDBNull(2) ? "" : procReader.GetString(2)
+                });
+            }
+        }
+
+        var logFile = await WriteLogAsync(req, results, procedureResults);
 
         return new SearchResponse
         {
             Results = results,
             TotalTables = tableSet.Count,
+            ProcedureResults = procedureResults,
+            TotalProcedures = procedureResults.Count,
             LogFile = logFile
         };
+    }
+
+    public async Task<List<ProcedureInfo>> GetProceduresAsync(SearchRequest req)
+    {
+        var procedures = new List<ProcedureInfo>();
+        var cs = BuildConnectionString(req.Server, req.Username, req.Password, req.Port, req.Database!, req.TrustedConnection, req.TrustServerCertificate);
+        using var conn = new SqlConnection(cs);
+        await conn.OpenAsync();
+
+        using var cmd = new SqlCommand(
+            "SELECT s.name, p.name FROM sys.procedures p " +
+            "JOIN sys.schemas s ON p.schema_id = s.schema_id " +
+            "ORDER BY s.name, p.name", conn);
+        using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+            procedures.Add(new ProcedureInfo { Schema = reader.GetString(0), Name = reader.GetString(1) });
+
+        return procedures;
     }
 
     public async Task<TableSchemaResponse> GetTableSchemaAsync(SearchRequest req)
@@ -206,7 +271,7 @@ public class SchemaSearchService
         };
     }
 
-    private async Task<string> WriteLogAsync(SearchRequest req, List<SearchResultRow> results)
+    private async Task<string> WriteLogAsync(SearchRequest req, List<SearchResultRow> results, List<ProcedureSearchResult> procedureResults)
     {
         var logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
         Directory.CreateDirectory(logDir);
@@ -224,6 +289,7 @@ public class SchemaSearchService
             $"Database: {req.Database}",
             $"Table Filter: {req.Table ?? "(all tables)"}",
             $"Table Names Filter: {(req.TableNames is { Count: > 0 } ? string.Join(", ", req.TableNames) : "(none)")}",
+            $"Procedure Filter: {(req.Procedures is { Count: > 0 } ? string.Join(", ", req.Procedures) : "(all procedures)")}",
             $"Columns Searched: {string.Join(", ", req.Columns)}",
             "========================================",
             "",
@@ -238,6 +304,14 @@ public class SchemaSearchService
         lines.Add("========================================");
         lines.Add($"{tableCount} tables found containing requested columns.");
         lines.Add("========================================");
+
+        if (procedureResults.Count > 0)
+        {
+            lines.Add("");
+            lines.Add("Procedures Found:");
+            foreach (var p in procedureResults)
+                lines.Add($"[{req.Database}].[{p.ProcedureSchema}].[{p.ProcedureName}]");
+        }
 
         await File.WriteAllLinesAsync(fullPath, lines);
         return fileName;

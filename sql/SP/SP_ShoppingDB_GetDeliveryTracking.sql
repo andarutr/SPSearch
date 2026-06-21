@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetDeliveryTracking
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetDeliveryTracking
     @RowId INT = NULL
 AS
 BEGIN

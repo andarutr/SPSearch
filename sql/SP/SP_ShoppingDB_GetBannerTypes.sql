@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetBannerTypes
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetBannerTypes
     @RowId INT = NULL
 AS
 BEGIN

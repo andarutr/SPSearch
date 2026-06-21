@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetUserRoles
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetUserRoles
     @RowId INT = NULL
 AS
 BEGIN

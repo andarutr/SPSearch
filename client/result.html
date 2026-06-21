@@ -11,13 +11,25 @@
         <link rel="stylesheet" href="css/style.css" />
     </head>
     <body>
-        <div class="container">
-            <div class="step-indicator">
-                <span class="badge step bg-success">SIGN</span>
-                <span class="badge step bg-primary">SEARCH</span>
-                <span class="badge step bg-secondary">RESULT</span>
+        <nav class="navbar navbar-expand navbar-dark bg-primary shadow-sm mb-4">
+            <div class="container">
+                <img src="images/logo.png" width="100" />
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge rounded-pill px-3 py-2 bg-success"
+                        >SIGN</span
+                    >
+                    <span
+                        class="badge rounded-pill px-3 py-2 bg-light text-dark fw-semibold"
+                        >SEARCH</span
+                    >
+                    <span class="badge rounded-pill px-3 py-2 bg-secondary"
+                        >RESULT</span
+                    >
+                </div>
             </div>
+        </nav>
 
+        <div class="container">
             <h1 class="page-title">Search Results</h1>
 
             <div id="loadingSection" class="card">
@@ -63,6 +75,34 @@
                     </div>
                 </div>
 
+                <div id="procedureResultsContainer" class="card">
+                    <h2>Stored Procedures</h2>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Schema</th>
+                                    <th>Procedure Name</th>
+                                    <th>Definition</th>
+                                </tr>
+                            </thead>
+                            <tbody id="procedureResultsBody"></tbody>
+                        </table>
+                    </div>
+                    <div
+                        id="emptyProcedureResults"
+                        class="hidden"
+                        style="
+                            text-align: center;
+                            padding: 1rem 0;
+                            font-weight: 600;
+                            color: #9ca3af;
+                        "
+                    >
+                        No stored procedures found.
+                    </div>
+                </div>
+
                 <div class="action-bar">
                     <button id="btnBack" class="btn btn-secondary">
                         &larr; Back to Search
@@ -81,8 +121,14 @@
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="schemaModalLabel">Table Schema</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <h5 class="modal-title" id="schemaModalLabel">
+                            Table Schema
+                        </h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                        ></button>
                     </div>
                     <div class="modal-body" id="schemaModalBody">
                         <div id="schemaLoading" class="text-center py-4">
@@ -92,7 +138,10 @@
                         <div id="schemaContent" class="hidden">
                             <h6 class="fw-semibold mb-2">Columns</h6>
                             <div class="table-responsive mb-4">
-                                <table class="table table-sm table-bordered schema-table" id="schemaColumnsTable">
+                                <table
+                                    class="table table-sm table-bordered schema-table"
+                                    id="schemaColumnsTable"
+                                >
                                     <thead>
                                         <tr>
                                             <th>Column Name</th>
@@ -104,9 +153,14 @@
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            <h6 class="fw-semibold mb-2">Sample Records (Top 3)</h6>
+                            <h6 class="fw-semibold mb-2">
+                                Sample Records (Top 3)
+                            </h6>
                             <div class="table-responsive">
-                                <table class="table table-sm table-bordered schema-table" id="schemaRecordsTable">
+                                <table
+                                    class="table table-sm table-bordered schema-table"
+                                    id="schemaRecordsTable"
+                                >
                                     <thead>
                                         <tr></tr>
                                     </thead>
@@ -114,10 +168,19 @@
                                 </table>
                             </div>
                         </div>
-                        <div id="schemaError" class="alert alert-error hidden"></div>
+                        <div
+                            id="schemaError"
+                            class="alert alert-error hidden"
+                        ></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            Close
+                        </button>
                     </div>
                 </div>
             </div>

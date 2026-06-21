@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetLabTestTypes
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetLabTestTypes
     @RowId INT = NULL
 AS
 BEGIN

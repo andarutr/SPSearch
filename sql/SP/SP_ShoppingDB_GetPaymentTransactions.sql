@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetPaymentTransactions
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetPaymentTransactions
     @RowId INT = NULL
 AS
 BEGIN

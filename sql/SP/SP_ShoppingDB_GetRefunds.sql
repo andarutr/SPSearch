@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetRefunds
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetRefunds
     @RowId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetChargebacks
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetChargebacks
     @RowId INT = NULL
 AS
 BEGIN

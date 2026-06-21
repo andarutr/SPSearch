@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetStockMovements
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetStockMovements
     @RowId INT = NULL
 AS
 BEGIN

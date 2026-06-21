@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetShippingZoneTypes
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetShippingZoneTypes
     @RowId INT = NULL
 AS
 BEGIN

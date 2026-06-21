@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetShippingMethods
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetShippingMethods
     @RowId INT = NULL
 AS
 BEGIN

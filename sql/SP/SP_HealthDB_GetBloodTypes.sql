@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetBloodTypes
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetBloodTypes
     @RowId INT = NULL
 AS
 BEGIN

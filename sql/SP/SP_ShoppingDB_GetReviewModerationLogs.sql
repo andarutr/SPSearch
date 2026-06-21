@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetReviewModerationLogs
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetReviewModerationLogs
     @RowId INT = NULL
 AS
 BEGIN

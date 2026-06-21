@@ -19,6 +19,36 @@ var SPSearch = (function () {
         sessionStorage.removeItem('spsearch_search');
     }
 
+    // ---- SAVED ACCOUNTS ----
+    function getSavedAccounts() {
+        try {
+            return JSON.parse(localStorage.getItem('spsearch_saved_accounts')) || [];
+        } catch { return []; }
+    }
+
+    function setSavedAccounts(accounts) {
+        localStorage.setItem('spsearch_saved_accounts', JSON.stringify(accounts));
+    }
+
+    function addSavedAccount(creds) {
+        var accounts = getSavedAccounts();
+        var idx = -1;
+        for (var i = 0; i < accounts.length; i++) {
+            if (accounts[i].server === creds.server && accounts[i].username === creds.username) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx !== -1) accounts.splice(idx, 1);
+        accounts.unshift({
+            server: creds.server,
+            username: creds.username || '',
+            password: creds.password || '',
+            port: creds.port || 1433
+        });
+        setSavedAccounts(accounts);
+    }
+
     function getSearchParams() {
         try {
             return JSON.parse(sessionStorage.getItem('spsearch_search'));
@@ -85,6 +115,7 @@ var SPSearch = (function () {
                 data: JSON.stringify(creds),
                 success: function () {
                     setCreds(creds);
+                    addSavedAccount(creds);
                     window.location.href = '/search';
                 },
                 error: function (xhr) {
@@ -100,6 +131,65 @@ var SPSearch = (function () {
         $('#password').on('keydown', function (e) {
             if (e.key === 'Enter') $('#btnSign').click();
         });
+
+        // ---- Account Suggestions ----
+        var suggestionBox = $('#suggestionBox');
+        var serverInput = $('#server');
+
+        function renderSuggestions() {
+            var accounts = getSavedAccounts();
+            if (accounts.length === 0) {
+                suggestionBox.addClass('hidden');
+                return;
+            }
+            var html = '';
+            accounts.forEach(function (acc, index) {
+                var serverLabel = acc.server;
+                var userLabel = acc.username || '(Windows Auth)';
+                html += '<div class="suggestion-item" data-index="' + index + '">' +
+                    '<div>' +
+                    '<div class="suggestion-server">' + $('<span>').text(serverLabel).html() + '</div>' +
+                    '<div class="suggestion-user">' + $('<span>').text(userLabel).html() + '</div>' +
+                    '</div>' +
+                    '<button class="suggestion-del" data-index="' + index + '">&times;</button>' +
+                    '</div>';
+            });
+            suggestionBox.html(html).removeClass('hidden');
+        }
+
+        serverInput.on('focus', function () {
+            renderSuggestions();
+        });
+
+        serverInput.on('click', function () {
+            renderSuggestions();
+        });
+
+        serverInput.on('blur', function () {
+            setTimeout(function () { suggestionBox.addClass('hidden'); }, 200);
+        });
+
+        suggestionBox.on('mousedown', '.suggestion-item', function (e) {
+            if ($(e.target).hasClass('suggestion-del')) return;
+            var index = $(this).data('index');
+            var accounts = getSavedAccounts();
+            var acc = accounts[index];
+            if (!acc) return;
+            $('#server').val(acc.server);
+            $('#username').val(acc.username);
+            $('#password').val(acc.password);
+            if (acc.port) $('#port').val(acc.port);
+            suggestionBox.addClass('hidden');
+        });
+
+        suggestionBox.on('click', '.suggestion-del', function (e) {
+            e.stopPropagation();
+            var index = $(this).data('index');
+            var accounts = getSavedAccounts();
+            accounts.splice(index, 1);
+            setSavedAccounts(accounts);
+            renderSuggestions();
+        });
     }
 
     // ---- PAGE 2: SEARCH CONFIG ----
@@ -111,8 +201,10 @@ var SPSearch = (function () {
         }
 
         var tableSelect = $('#tableSelect');
+        var procedureSelect = $('#procedureSelect');
         var databaseSelect = $('#databaseSelect');
         var selectAllLink = $('#selectAllTables');
+        var selectAllProcedures = $('#selectAllProcedures');
         var savedParams = getSearchParams();
 
         // Init Select2 on database
@@ -122,6 +214,12 @@ var SPSearch = (function () {
         tableSelect.select2({
             width: '100%',
             placeholder: 'All Tables (select to narrow)'
+        });
+
+        // Init Select2 on procedure (multi-select)
+        procedureSelect.select2({
+            width: '100%',
+            placeholder: 'All Procedures (select to narrow)'
         });
 
         // Load databases
@@ -149,7 +247,7 @@ var SPSearch = (function () {
             }
         });
 
-        // When database changes, load tables
+        // When database changes, load tables and procedures
         databaseSelect.on('change', function () {
             var db = $(this).val();
 
@@ -162,10 +260,20 @@ var SPSearch = (function () {
                 placeholder: 'All Tables (select to narrow)'
             });
 
+            // Destroy and recreate Select2 for procedure
+            procedureSelect.select2('destroy');
+            procedureSelect.empty();
+            procedureSelect.prop('disabled', true);
+            procedureSelect.select2({
+                width: '100%',
+                placeholder: 'All Procedures (select to narrow)'
+            });
+
             if (!db) return;
 
             var req = $.extend({}, creds, { database: db });
 
+            // Load tables
             $.ajax({
                 url: apiBase + '/tables',
                 method: 'POST',
@@ -197,9 +305,42 @@ var SPSearch = (function () {
                     });
                 }
             });
+
+            // Load procedures
+            $.ajax({
+                url: apiBase + '/procedures',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(req),
+                success: function (procedures) {
+                    procedures.forEach(function (p) {
+                        var label = p.schema + '.' + p.name;
+                        procedureSelect.append('<option value="' + $('<span>').text(label).html() + '">' + $('<span>').text(label).html() + '</option>');
+                    });
+                    procedureSelect.prop('disabled', false);
+                    procedureSelect.select2('destroy');
+                    procedureSelect.select2({
+                        width: '100%',
+                        placeholder: 'All Procedures (select to narrow)'
+                    });
+
+                    // Restore procedure selections after options loaded
+                    if (savedParams && savedParams.procedures && savedParams.database === db) {
+                        procedureSelect.val(savedParams.procedures).trigger('change');
+                    }
+                },
+                error: function () {
+                    procedureSelect.prop('disabled', false);
+                    procedureSelect.select2('destroy');
+                    procedureSelect.select2({
+                        width: '100%',
+                        placeholder: 'All Procedures (select to narrow)'
+                    });
+                }
+            });
         });
 
-        // Select All / Deselect All
+        // Select All / Deselect All for tables
         selectAllLink.on('click', function (e) {
             e.preventDefault();
             var allOptions = tableSelect.find('option');
@@ -218,6 +359,27 @@ var SPSearch = (function () {
             var allOptions = tableSelect.find('option');
             var allSelected = allOptions.length > 0 && allOptions.length === (tableSelect.val()?.length || 0);
             selectAllLink.text(allSelected ? 'Deselect All' : 'Select All');
+        });
+
+        // Select All / Deselect All for procedures
+        selectAllProcedures.on('click', function (e) {
+            e.preventDefault();
+            var allOptions = procedureSelect.find('option');
+            var allSelected = allOptions.length > 0 && allOptions.length === procedureSelect.val()?.length;
+            if (allSelected) {
+                procedureSelect.val(null).trigger('change');
+                selectAllProcedures.text('Select All');
+            } else {
+                procedureSelect.val(allOptions.map(function () { return $(this).val(); }).get()).trigger('change');
+                selectAllProcedures.text('Deselect All');
+            }
+        });
+
+        // Update link text when selection changes
+        procedureSelect.on('change', function () {
+            var allOptions = procedureSelect.find('option');
+            var allSelected = allOptions.length > 0 && allOptions.length === (procedureSelect.val()?.length || 0);
+            selectAllProcedures.text(allSelected ? 'Deselect All' : 'Select All');
         });
 
         // Add table
@@ -326,11 +488,13 @@ var SPSearch = (function () {
             }
 
             var tables = tableSelect.val() || null;
+            var procedures = procedureSelect.val() || null;
 
             setSearchParams({
                 database: db,
                 tables: tables,
                 tableNames: tableNames,
+                procedures: procedures,
                 columns: columns
             });
 
@@ -475,11 +639,14 @@ var SPSearch = (function () {
         var results = resp.results || [];
         var totalTables = resp.totalTables || 0;
         var totalColumns = results.length;
+        var procResults = resp.procedureResults || [];
+        var totalProcedures = resp.totalProcedures || 0;
 
         // Summary cards
         var summaryHtml =
             '<div class="card"><div class="number">' + totalTables + '</div><div class="label">Tables Found</div></div>' +
-            '<div class="card"><div class="number">' + totalColumns + '</div><div class="label">Columns Matched</div></div>';
+            '<div class="card"><div class="number">' + totalColumns + '</div><div class="label">Columns Matched</div></div>' +
+            '<div class="card"><div class="number">' + totalProcedures + '</div><div class="label">Procedures Found</div></div>';
         $('#summaryCards').html(summaryHtml);
 
         // Table body
@@ -501,6 +668,29 @@ var SPSearch = (function () {
                     '<td>' + $('<span>').text(r.dataType).html() + '</td>' +
                     '</tr>');
                 tbody.append(row);
+            });
+        }
+
+        // Procedure results
+        var procTbody = $('#procedureResultsBody');
+        procTbody.empty();
+
+        if (procResults.length === 0) {
+            $('#emptyProcedureResults').removeClass('hidden');
+            $('#procedureResultsContainer table').addClass('hidden');
+        } else {
+            $('#emptyProcedureResults').addClass('hidden');
+            $('#procedureResultsContainer table').removeClass('hidden');
+
+            procResults.forEach(function (p) {
+                var def = p.definition || '';
+                var truncated = def.length > 200 ? def.substring(0, 200) + '...' : def;
+                var row = $('<tr>' +
+                    '<td>' + $('<span>').text(p.procedureSchema).html() + '</td>' +
+                    '<td><strong>' + $('<span>').text(p.procedureName).html() + '</strong></td>' +
+                    '<td style="font-family: monospace; font-size: 0.8rem; white-space: pre-wrap; max-width: 400px;">' + $('<span>').text(truncated).html() + '</td>' +
+                    '</tr>');
+                procTbody.append(row);
             });
         }
 

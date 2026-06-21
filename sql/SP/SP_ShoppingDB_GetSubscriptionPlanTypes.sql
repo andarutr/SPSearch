@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetSubscriptionPlanTypes
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetSubscriptionPlanTypes
     @RowId INT = NULL
 AS
 BEGIN

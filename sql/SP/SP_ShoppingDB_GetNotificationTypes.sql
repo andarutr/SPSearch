@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetNotificationTypes
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetNotificationTypes
     @RowId INT = NULL
 AS
 BEGIN

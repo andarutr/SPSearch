@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetClickTracking
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetClickTracking
     @RowId INT = NULL
 AS
 BEGIN

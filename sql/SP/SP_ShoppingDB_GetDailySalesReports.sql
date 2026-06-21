@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetDailySalesReports
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetDailySalesReports
     @RowId INT = NULL
 AS
 BEGIN

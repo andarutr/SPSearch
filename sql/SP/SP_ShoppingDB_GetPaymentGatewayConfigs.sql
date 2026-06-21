@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetPaymentGatewayConfigs
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetPaymentGatewayConfigs
     @RowId INT = NULL
 AS
 BEGIN

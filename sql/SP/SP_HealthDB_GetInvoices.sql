@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetInvoices
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetInvoices
     @RowId INT = NULL
 AS
 BEGIN

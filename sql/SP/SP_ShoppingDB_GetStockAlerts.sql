@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetStockAlerts
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetStockAlerts
     @RowId INT = NULL
 AS
 BEGIN

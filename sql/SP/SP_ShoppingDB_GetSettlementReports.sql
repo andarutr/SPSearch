@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetSettlementReports
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetSettlementReports
     @RowId INT = NULL
 AS
 BEGIN

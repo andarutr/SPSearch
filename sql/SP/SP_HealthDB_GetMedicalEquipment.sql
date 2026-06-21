@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetMedicalEquipment
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetMedicalEquipment
     @RowId INT = NULL
 AS
 BEGIN

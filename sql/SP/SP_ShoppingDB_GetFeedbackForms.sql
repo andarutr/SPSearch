@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetFeedbackForms
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetFeedbackForms
     @RowId INT = NULL
 AS
 BEGIN

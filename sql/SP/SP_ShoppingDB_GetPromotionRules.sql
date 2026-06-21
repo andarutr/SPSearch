@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetPromotionRules
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetPromotionRules
     @RowId INT = NULL
 AS
 BEGIN

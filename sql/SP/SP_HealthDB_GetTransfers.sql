@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetTransfers
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetTransfers
     @RowId INT = NULL
 AS
 BEGIN

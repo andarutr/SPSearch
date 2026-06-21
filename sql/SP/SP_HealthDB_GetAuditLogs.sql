@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetAuditLogs
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetAuditLogs
     @RowId INT = NULL
 AS
 BEGIN

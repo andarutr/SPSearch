@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetAppointments
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetAppointments
     @RowId INT = NULL
 AS
 BEGIN

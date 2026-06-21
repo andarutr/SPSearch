@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetReviewStatuses
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetReviewStatuses
     @RowId INT = NULL
 AS
 BEGIN

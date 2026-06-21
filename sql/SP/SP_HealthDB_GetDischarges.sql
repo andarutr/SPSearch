@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetDischarges
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetDischarges
     @RowId INT = NULL
 AS
 BEGIN

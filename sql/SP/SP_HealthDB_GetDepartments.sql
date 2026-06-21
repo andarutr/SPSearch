@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_HealthDB_GetDepartments
+CREATE OR ALTER PROCEDURE SP_HealthDB_GetDepartments
     @RowId INT = NULL
 AS
 BEGIN

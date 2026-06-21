@@ -11,6 +11,7 @@ public class SearchRequest
     public string Database { get; set; } = string.Empty;
     public string? Table { get; set; }
     public List<string>? TableNames { get; set; }
+    public List<string>? Procedures { get; set; }
     public string? TableSchema { get; set; }
     public string? TableName { get; set; }
     public List<string> Columns { get; set; } = [];

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetChatMessages
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetChatMessages
     @RowId INT = NULL
 AS
 BEGIN

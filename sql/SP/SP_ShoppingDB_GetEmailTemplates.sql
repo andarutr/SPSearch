@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE SP_ShoppingDB_GetEmailTemplates
+CREATE OR ALTER PROCEDURE SP_ShoppingDB_GetEmailTemplates
     @RowId INT = NULL
 AS
 BEGIN
