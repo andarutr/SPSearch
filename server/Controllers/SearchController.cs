@@ -71,6 +71,20 @@ public class SearchController : ControllerBase
         }
     }
 
+    [HttpPost("schema")]
+    public async Task<IActionResult> GetSchema([FromBody] SearchRequest req)
+    {
+        try
+        {
+            var response = await _service.GetTableSchemaAsync(req);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     [HttpGet("log/{filename}")]
     public IActionResult DownloadLog(string filename)
     {

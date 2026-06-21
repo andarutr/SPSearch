@@ -90,6 +90,18 @@ public class SchemaSearchService
         }
 
         var where = string.Join(" OR ", whereClauses);
+
+        var tableNameClauses = new List<string>();
+        if (req.TableNames is { Count: > 0 })
+        {
+            for (int i = 0; i < req.TableNames.Count; i++)
+            {
+                var paramName = $"@tbl{i}";
+                tableNameClauses.Add($"TABLE_NAME LIKE {paramName}");
+                parameters.Add(new SqlParameter(paramName, $"%{req.TableNames[i]}%"));
+            }
+        }
+
         var tableFilter = string.IsNullOrEmpty(req.Table)
             ? ""
             : $" AND TABLE_SCHEMA + '.' + TABLE_NAME = @table";
@@ -97,9 +109,13 @@ public class SchemaSearchService
         if (!string.IsNullOrEmpty(req.Table))
             parameters.Add(new SqlParameter("@table", req.Table));
 
+        var andClauses = new List<string> { $"({where})" };
+        if (tableNameClauses.Count > 0)
+            andClauses.Add($"({string.Join(" OR ", tableNameClauses)})");
+
         var sql = $"SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE " +
                   $"FROM [{req.Database}].INFORMATION_SCHEMA.COLUMNS " +
-                  $"WHERE ({where}){tableFilter} " +
+                  $"WHERE {string.Join(" AND ", andClauses)}{tableFilter} " +
                   $"ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION";
 
         using var cmd = new SqlCommand(sql, conn);
@@ -132,6 +148,64 @@ public class SchemaSearchService
         };
     }
 
+    public async Task<TableSchemaResponse> GetTableSchemaAsync(SearchRequest req)
+    {
+        var cs = BuildConnectionString(req.Server, req.Username, req.Password, req.Port, req.Database!, req.TrustedConnection, req.TrustServerCertificate);
+
+        using var conn = new SqlConnection(cs);
+        await conn.OpenAsync();
+
+        var columns = new List<ColumnInfo>();
+
+        using (var cmd = new SqlCommand(
+            "SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH " +
+            "FROM INFORMATION_SCHEMA.COLUMNS " +
+            "WHERE TABLE_SCHEMA = @schema AND TABLE_NAME = @table " +
+            "ORDER BY ORDINAL_POSITION", conn))
+        {
+            cmd.Parameters.AddWithValue("@schema", req.TableSchema!);
+            cmd.Parameters.AddWithValue("@table", req.TableName!);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                columns.Add(new ColumnInfo
+                {
+                    ColumnName = reader.GetString(0),
+                    DataType = reader.GetString(1),
+                    IsNullable = reader.GetString(2),
+                    MaxLength = reader.IsDBNull(3) ? null : (int?)reader.GetInt32(3)
+                });
+            }
+        }
+
+        var sampleRecords = new List<Dictionary<string, object?>>();
+
+        using (var cmd = new SqlCommand(
+            $"SELECT TOP 3 * FROM [{req.Database}].[{req.TableSchema}].[{req.TableName}]", conn))
+        using (var reader = await cmd.ExecuteReaderAsync())
+        {
+            var schemaTable = await reader.GetColumnSchemaAsync();
+
+            while (await reader.ReadAsync())
+            {
+                var record = new Dictionary<string, object?>();
+                for (int i = 0; i < schemaTable.Count; i++)
+                {
+                    record[schemaTable[i].ColumnName] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+                }
+                sampleRecords.Add(record);
+            }
+        }
+
+        return new TableSchemaResponse
+        {
+            TableName = $"{req.TableSchema}.{req.TableName}",
+            Columns = columns,
+            SampleRecords = sampleRecords
+        };
+    }
+
     private async Task<string> WriteLogAsync(SearchRequest req, List<SearchResultRow> results)
     {
         var logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
@@ -149,6 +223,7 @@ public class SchemaSearchService
             $"Server: {req.Server}",
             $"Database: {req.Database}",
             $"Table Filter: {req.Table ?? "(all tables)"}",
+            $"Table Names Filter: {(req.TableNames is { Count: > 0 } ? string.Join(", ", req.TableNames) : "(none)")}",
             $"Columns Searched: {string.Join(", ", req.Columns)}",
             "========================================",
             "",
