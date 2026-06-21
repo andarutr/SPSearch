@@ -118,6 +118,17 @@ var SPSearch = (function () {
 
         var tableSelect = $('#tableSelect');
         var databaseSelect = $('#databaseSelect');
+        var selectAllLink = $('#selectAllTables');
+        var savedParams = getSearchParams();
+
+        // Init Select2 on database
+        databaseSelect.select2({ width: '100%' });
+
+        // Init Select2 on table (multi-select)
+        tableSelect.select2({
+            width: '100%',
+            placeholder: 'All Tables (select to narrow)'
+        });
 
         // Load databases
         $.ajax({
@@ -130,6 +141,12 @@ var SPSearch = (function () {
                 dbs.forEach(function (db) {
                     databaseSelect.append('<option value="' + $('<span>').text(db.name).html() + '">' + $('<span>').text(db.name).html() + '</option>');
                 });
+                databaseSelect.trigger('change');
+
+                // Restore database after options loaded
+                if (savedParams && savedParams.database) {
+                    databaseSelect.val(savedParams.database).trigger('change');
+                }
             },
             error: function (xhr) {
                 var msg = 'Failed to load databases.';
@@ -141,8 +158,15 @@ var SPSearch = (function () {
         // When database changes, load tables
         databaseSelect.on('change', function () {
             var db = $(this).val();
-            tableSelect.find('option:not(:first)').remove();
+
+            // Destroy and recreate Select2 for table
+            tableSelect.select2('destroy');
+            tableSelect.empty();
             tableSelect.prop('disabled', true);
+            tableSelect.select2({
+                width: '100%',
+                placeholder: 'All Tables (select to narrow)'
+            });
 
             if (!db) return;
 
@@ -159,11 +183,47 @@ var SPSearch = (function () {
                         tableSelect.append('<option value="' + $('<span>').text(label).html() + '">' + $('<span>').text(label).html() + '</option>');
                     });
                     tableSelect.prop('disabled', false);
+                    tableSelect.select2('destroy');
+                    tableSelect.select2({
+                        width: '100%',
+                        placeholder: 'All Tables (select to narrow)'
+                    });
+
+                    // Restore table selections after options loaded
+                    if (savedParams && savedParams.tables && savedParams.database === db) {
+                        tableSelect.val(savedParams.tables).trigger('change');
+                    }
                 },
                 error: function () {
                     tableSelect.prop('disabled', false);
+                    tableSelect.select2('destroy');
+                    tableSelect.select2({
+                        width: '100%',
+                        placeholder: 'All Tables (select to narrow)'
+                    });
                 }
             });
+        });
+
+        // Select All / Deselect All
+        selectAllLink.on('click', function (e) {
+            e.preventDefault();
+            var allOptions = tableSelect.find('option');
+            var allSelected = allOptions.length > 0 && allOptions.length === tableSelect.val()?.length;
+            if (allSelected) {
+                tableSelect.val(null).trigger('change');
+                selectAllLink.text('Select All');
+            } else {
+                tableSelect.val(allOptions.map(function () { return $(this).val(); }).get()).trigger('change');
+                selectAllLink.text('Deselect All');
+            }
+        });
+
+        // Update link text when selection changes
+        tableSelect.on('change', function () {
+            var allOptions = tableSelect.find('option');
+            var allSelected = allOptions.length > 0 && allOptions.length === (tableSelect.val()?.length || 0);
+            selectAllLink.text(allSelected ? 'Deselect All' : 'Select All');
         });
 
         // Add column
@@ -193,6 +253,21 @@ var SPSearch = (function () {
             window.location.href = 'index.html';
         });
 
+        // Restore column inputs
+        if (savedParams && savedParams.columns) {
+            // Remove default empty row
+            $('#columnsContainer').empty();
+            savedParams.columns.forEach(function (col) {
+                var container = $('#columnsContainer');
+                var count = container.children().length;
+                var row = $('<div class="column-row" data-index="' + count + '">' +
+                    '<input type="text" class="col-input" placeholder="e.g. Name, Email, Address" value="' + $('<span>').text(col).html() + '">' +
+                    '<button class="btn btn-danger btn-delete-col">&times;</button>' +
+                    '</div>');
+                container.append(row);
+            });
+        }
+
         // Search button
         $('#btnSearch').on('click', function () {
             hideError();
@@ -213,11 +288,11 @@ var SPSearch = (function () {
                 return;
             }
 
-            var table = tableSelect.val() || null;
+            var tables = tableSelect.val() || null;
 
             setSearchParams({
                 database: db,
-                table: table,
+                tables: tables,
                 columns: columns
             });
 
@@ -260,8 +335,8 @@ var SPSearch = (function () {
             }
         });
 
-        // New Search
-        $('#btnNewSearch').on('click', function () {
+        // Back to Search
+        $('#btnBack').on('click', function () {
             window.location.href = 'page2.html';
         });
 

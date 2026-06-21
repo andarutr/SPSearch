@@ -412,3 +412,76 @@ tbody tr:hover {
     font-size: 0.85rem;
     margin-bottom: 1rem;
 }
+
+/* SELECT2 OVERRIDES */
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container .select2-selection--single {
+    height: 40px;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.95rem;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 38px;
+    padding-left: 0.75rem;
+    color: #111827;
+}
+
+.select2-container .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+}
+
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.9rem;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: #DBEAFE;
+    border: 1px solid #93C5FD;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #1E40AF;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #1E40AF;
+    border-right: 1px solid #93C5FD;
+}
+
+.select2-dropdown {
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.9rem;
+}
+
+.select2-search__field {
+    font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+/* SELECT ALL LINK */
+.select-all-link {
+    display: inline-block;
+    color: #2563EB;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
+.select-all-link:hover {
+    text-decoration: underline;
+}
