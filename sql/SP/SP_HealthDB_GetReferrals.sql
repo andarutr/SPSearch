@@ -1,0 +1,12 @@
+﻿CREATE PROCEDURE SP_HealthDB_GetReferrals
+    @RowId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT *
+    FROM Referrals
+    WHERE (ROWID = @RowId OR @RowId IS NULL)
+    ORDER BY ROWID;
+END;
+

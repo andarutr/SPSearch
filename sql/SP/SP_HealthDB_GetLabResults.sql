@@ -1,0 +1,12 @@
+﻿CREATE PROCEDURE SP_HealthDB_GetLabResults
+    @RowId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT *
+    FROM LabResults
+    WHERE (ROWID = @RowId OR @RowId IS NULL)
+    ORDER BY ROWID;
+END;
+

@@ -1,0 +1,12 @@
+﻿CREATE PROCEDURE SP_ShoppingDB_GetPayouts
+    @RowId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT *
+    FROM Payouts
+    WHERE (ROWID = @RowId OR @RowId IS NULL)
+    ORDER BY ROWID;
+END;
+

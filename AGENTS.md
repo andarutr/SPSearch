@@ -10,11 +10,13 @@ SQL Server schema search tool. Find which tables have the columns you need witho
 - **`sql/health_database_50_tables.sql`** — Full 50-table schema with ROWID PKs, dex_row_id, FK relationships, 3 sample records each
 - **`sql/shopping_database_100_tables.sql`** — 134-table e-commerce schema (ShoppingDB), ROWID PKs, dex_row_id, 169 FK constraints, 3 records each (DEX001–DEX402)
 - **`sql/ticketing_database_gp_style.sql`** — 25-table ticketing schema (Microsoft Dynamics GP naming: XXnnnss), ROWID PKs, dex_row_id, 38 FK constraints, 3 records each (DEX001–DEX075)
+- **`sql/TABLE/`** — Individual CREATE TABLE scripts: `HealthDB.sql` (50 tables), `ShoppingDB.sql` (134 tables), `TicketingDB.sql` (25 tables)
+- **`sql/SP/`** — 209 SELECT-only stored procedures (one per table), naming: `SP_{Database}_Get{TableName}.sql`
 
 ## Tech Stack
 
 - **Backend**: .NET 10, ASP.NET Core Web API, Microsoft.Data.SqlClient
-- **Frontend**: jQuery 3.7, Bootstrap 5.3, vanilla CSS (Minimalist)
+- **Frontend**: jQuery 3.7, Bootstrap 5.3, Select2 4.1, vanilla CSS (Minimalist)
 - **Architecture**: Monolith (standalone ASP.NET serves static client files)
 
 ## Decisions Log
@@ -40,6 +42,14 @@ SQL Server schema search tool. Find which tables have the columns you need witho
 | 2026-06-21 | `tables` param as array (was `table` string) | Frontend sends `tables: string[]` for multi-table support |
 | 2026-06-21 | State restoration on back navigation | Page 3 "Back to Search" preserves database, table selections, and column inputs via sessionStorage |
 | 2026-06-21 | Select All / Deselect All for tables | Toggle link to quickly select or clear all table options |
+| 2026-06-21 | File renames: index→sign, page2→search, page3→result | Cleaner endpoint naming — sign.html, search.html, result.html |
+| 2026-06-21 | Clean URL routes /home /search /result | Server-side fallback routes mapped to the renamed HTML files |
+| 2026-06-21 | Sign Out button on search page | Clears session and navigates to /home for fresh credential entry |
+| 2026-06-21 | No auto-redirect on sign page | Removed creds redirect — sign page always shows the form (pre-filled if session exists) |
+| 2026-06-21 | Select2 multi-select max-height 120px scroll | Prevents tag overflow when many tables selected |
+| 2026-06-21 | Step indicator → Bootstrap badges with 10px radius | Replaced custom circles with Bootstrap `.badge bg-primary/success/secondary` |
+| 2026-06-21 | Scrollable results table with sticky header | `.table-wrapper` max-height + sticky thead keeps header visible while rows scroll |
+| 2026-06-21 | 209 SELECT-only SPs in sql/SP/ | One per table, naming `SP_{Database}_Get{Table}`, generated from TABLE scripts |
 
 ## API Endpoints
 
@@ -60,6 +70,6 @@ SQL Server schema search tool. Find which tables have the columns you need witho
 
 ## Pages
 
-1. **index.html** — Server credentials form → SIGN
-2. **page2.html** — Database/table select (Select2 multi-select) + dynamic column inputs → SEARCH
-3. **page3.html** — Results table + log download + back to search (state preserved)
+1. **sign.html** (`/home`) — Server credentials form → SIGN
+2. **search.html** (`/search`) — Database/table select (Select2 multi-select) + dynamic column inputs → SEARCH
+3. **result.html** (`/result`) — Results table (scrollable, sticky header) + log download + back to search (state preserved)

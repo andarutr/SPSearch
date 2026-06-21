@@ -1,0 +1,12 @@
+﻿CREATE PROCEDURE SP_ShoppingDB_GetUsers
+    @RowId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT *
+    FROM Users
+    WHERE (ROWID = @RowId OR @RowId IS NULL)
+    ORDER BY ROWID;
+END;
+

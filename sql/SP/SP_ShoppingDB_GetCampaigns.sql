@@ -1,0 +1,12 @@
+﻿CREATE PROCEDURE SP_ShoppingDB_GetCampaigns
+    @RowId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT *
+    FROM Campaigns
+    WHERE (ROWID = @RowId OR @RowId IS NULL)
+    ORDER BY ROWID;
+END;
+

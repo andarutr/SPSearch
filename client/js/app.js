@@ -40,12 +40,6 @@ var SPSearch = (function () {
 
     // ---- PAGE 1: CONNECT ----
     function initPage1() {
-        // If already connected, redirect to page 2
-        if (getCreds()) {
-            window.location.href = 'page2.html';
-            return;
-        }
-
         // Toggle SQL auth fields
         function toggleAuthFields() {
             var trusted = $('#trustedAuth').is(':checked');
@@ -91,7 +85,7 @@ var SPSearch = (function () {
                 data: JSON.stringify(creds),
                 success: function () {
                     setCreds(creds);
-                    window.location.href = 'page2.html';
+                    window.location.href = '/search';
                 },
                 error: function (xhr) {
                     var msg = 'Connection failed.';
@@ -112,7 +106,7 @@ var SPSearch = (function () {
     function initPage2() {
         var creds = getCreds();
         if (!creds) {
-            window.location.href = 'index.html';
+            window.location.href = '/home';
             return;
         }
 
@@ -250,7 +244,13 @@ var SPSearch = (function () {
 
         // Back button
         $('#btnBack').on('click', function () {
-            window.location.href = 'index.html';
+            window.location.href = '/home';
+        });
+
+        // Sign Out button
+        $('#btnSignOut').on('click', function () {
+            clearCreds();
+            window.location.href = '/home';
         });
 
         // Restore column inputs
@@ -296,7 +296,7 @@ var SPSearch = (function () {
                 columns: columns
             });
 
-            window.location.href = 'page3.html';
+            window.location.href = '/result';
         });
     }
 
@@ -306,7 +306,7 @@ var SPSearch = (function () {
         var params = getSearchParams();
 
         if (!creds || !params) {
-            window.location.href = 'index.html';
+            window.location.href = '/home';
             return;
         }
 
@@ -337,13 +337,13 @@ var SPSearch = (function () {
 
         // Back to Search
         $('#btnBack').on('click', function () {
-            window.location.href = 'page2.html';
+            window.location.href = '/search';
         });
 
         // New Connection
         $('#btnNewConnection').on('click', function () {
             clearCreds();
-            window.location.href = 'index.html';
+            window.location.href = '/home';
         });
 
         // Download log
@@ -403,11 +403,11 @@ var SPSearch = (function () {
         init: function () {
             var path = window.location.pathname.toLowerCase();
 
-            if (path.endsWith('index.html') || path.endsWith('/') || path === '') {
+            if (path.endsWith('index.html') || path.endsWith('sign.html') || path.endsWith('/') || path === '' || path.endsWith('/home')) {
                 initPage1();
-            } else if (path.endsWith('page2.html')) {
+            } else if (path.endsWith('page2.html') || path.endsWith('search.html') || path.endsWith('/search')) {
                 initPage2();
-            } else if (path.endsWith('page3.html')) {
+            } else if (path.endsWith('page3.html') || path.endsWith('result.html') || path.endsWith('/result')) {
                 initPage3();
             }
         }
